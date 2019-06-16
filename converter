@@ -1,0 +1,287 @@
+#! /bin/bash
+
+#lets write a video mp3 converter
+#we are going to use ffmpeg as the library
+#tasks:convert video to mp3,convert video to different video formats,create a video from an audio and an image,slow down the speed of the media
+
+#Author:peter macharia
+#declare the required variables
+dpkg -l | grep -qw ffmpeg || sudo apt install ffmpeg
+dpkg -l | grep -qw less || sudo apt install less
+
+
+
+convert(){
+
+echo "basic video to mp3 conversion"
+#ffmpeg -i input.mp4 output.mp3
+#we need input file,output file from the user if no output given use default
+echo "enter the  filename to convert(remember to put the extension)"
+read inputFile
+if [ -z "$inputFile" ]
+then
+	echo "you must provide a file name to convert"
+	exit
+else
+	if [ -f "$inputFile" ]
+	then
+
+		echo "enter the output filename or press enter for default"
+		read outPutFile
+		if [ -z "$outPutFile" ]
+		then 
+			outPutFile="$inputFile"
+
+		else
+			outPutFile="$outPutFile".mp3
+		fi
+	else
+		echo "file $inputFile does not exist"
+
+		exit
+    fi
+fi	
+
+echo "------------------------------"
+echo "wait as your file is converted"
+echo "------------------------------"
+sleep 4
+ ffmpeg -y -i $inputFile -vn $outPutFile
+ 
+if [ "$?" == "0" ]
+then
+	echo "successfully saved your file as $outPutFile"
+
+else
+	echo "something went wrong"
+	rm -i $outPutFile &> /dev/null
+	exit 1
+fi
+
+	
+}
+
+pic2Video(){
+	#we need to get picture ,audio and output file from use
+	echo "----------------------------------------"
+	echo "use an image and audio to create a video"
+	echo "----------------------------------------"
+	echo "enter the name of the image"
+	read imageFile
+	if [ -z "$imageFile" ]
+	then
+		echo "image must be provided"
+		exit
+	else
+		if [ -f "$imageFile" ]
+		then
+			#echo "we have an image"
+			echo "name of the audio file"
+			read audioFile
+			if [ -z "$audioFile" ]
+			then 
+				echo "you have to provide an audio file"
+				exit 1
+			else
+				if [ -f "$audioFile" ]
+				then
+					echo "how do you want to save your file"
+					read pic2vidOut
+					if [ -z "$pic2vidOut" ]
+					then
+						pic2vidOut="$audioFile".mkv
+					else
+						pic2vidOut="$pic2vidOut".mkv
+					
+					fi
+				else
+					echo "the file $audioFile does not exist"
+					exit 1
+				fi
+				echo "---------------------------------------"
+				echo "---combining your image and audio------"
+				echo "---------------------------------------"
+					sleep 3
+					#call ffmpeg to do the task
+					ffmpeg -loop 1 -y -i "$imageFile" -i "$audioFile"  -acodec flac -vcodec libx264 -shortest -preset fast -vf scale=1280:-2 "$pic2vidOut"
+						if [ "$?" == "0" ]
+						then
+							echo "---------------------------"
+							echo "done:file saved as $pic2vidOut"
+						else
+							rm $pic2vidOut &> /dev/null
+							echo "something went wrong, try again"
+							exit 1
+						fi	
+
+
+				fi
+			
+		
+		fi	
+	fi
+	
+
+}
+formatConvert(){
+
+echo "basic video format conversion"
+#convert any video file to a differnet format
+echo "enter the video to convert"
+read video
+if [ -z "$video" ]
+then
+	echo "you must provide a filename"
+	exit
+else
+	if [ ! -f "$video" ]
+	then
+		echo "the file $video does not exist"
+		exit
+fi	
+	echo "enter the format you want"
+	read vidFormat
+	echo "how do you want to save the new file"
+	read videoName
+	if [ -z $videoName ]
+	then
+		$videoName="output"
+	fi
+echo "----------------------------------"
+echo "------This might take long--------"
+echo "----------------------------------"
+sleep 4
+	case "$vidFormat" in
+		avi)
+			echo "the format is avi"
+			ffmpeg -i $video -q:a 0 -q:v 0 -f avi -preset veryslow  "$videoName".avi
+			exit
+			;;
+		webm)
+			echo "the format is webm"
+			ffmpeg -i $video -q:a 0 -q:v 0 -f webm "$videoName".webm
+			exit
+			;;
+		mp4)
+			echo "mp4 video format"
+			ffmpeg -i $video -q:a 0 -q:v 0 -f mp4 "$videoName".mp4
+			exit
+			;;
+		flv)
+			echo "flv video format"
+			ffmpeg -i $video -q:a 1 -q:v 1 -f flv "$videoName".flv
+			exit
+			;;
+		mpeg)
+			echo "mpeg format"
+			ffmpeg -i $video -q:a 1 -q:v 1 -f mpeg "$videoName".mpeg
+			exit
+			;;
+		ogg)
+			echo "ogg video fomat"
+			ffmpeg -i $video -q:a 1 -q:v 1 -f ogg "$videoName".ogg
+			exit
+			;;
+
+		*)
+			echo "check your format/may not be supported"
+			exit 1
+			;;
+		esac	
+
+fi
+ 
+
+
+
+
+}
+completed(){
+
+echo "-------------------------------"
+echo "proceess completed successfully"
+echo "----------goodbye--------------"
+echo "-------------------------------"
+
+}
+
+usage_help(){
+less <<  _EOF_
+	converter version 1.0
+
+	Name:
+		converter
+	SYNOPSIS:
+		converter [options]
+	DESCRIPTION:
+		converter is a unix program that can be used to do various media
+		tasks.it can be used to convert video files to audio files,it
+		can also be used to create a video from audio and image and 
+		other basic media conversions.
+		-This program uses ffmpeg  video converter
+	USAGE:
+		converter -option
+		That simple,The program will guide you afterwords
+	OPTIONS:
+		-c : This option is used for basic video to audio conversion
+		     if audio input is in a different directory provide
+			 the full path to it
+			 The output can also be directed to a different directory
+			 by providing the absolute path
+			 Note: if output name already exists they will be overwritten
+		-p : This option is used to create a video from a raw image
+		     file and audio file.
+		-b : To convert your videos or audio from one format to another
+			 say video from mkv to avi,audio from mp3 to mp4
+		--help: used to display this help page
+
+		-----------------------------------------------------------
+		AUTHOR: PETER MACHARIA
+				ADIOS
+              -----------------------------------------------------
+
+
+_EOF_
+
+}
+
+
+#execution
+#check the correct parameter usage first
+if [ -z "$1" ]
+then
+#	usage_help
+	echo "usage:check converter --help"
+	exit 0
+fi
+
+
+if [ "$1" == "-c" ]
+then
+	convert
+	completed
+#	exit 0
+
+	
+elif [ "$1" == "-p" ]
+then
+	pic2Video
+	completed
+	exit 0
+	
+elif [ 	"$1" == "--help" ]
+then
+	usage_help
+	exit 0
+	
+elif [ "$1" == "-b" ]
+then
+	formatConvert
+	completed
+	exit 0
+	
+else
+	echo "unrecoginzed option ,type: converter --help to learn more"	
+	exit 1
+fi	
+
