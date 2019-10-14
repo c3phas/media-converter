@@ -12,7 +12,7 @@
 			<b>echo $PATH</b>
 			<p>the path will be sepparated by a colon..you can copy your file to any of this path</p>
 
-	<pre>USAGE:
+	USAGE:
 		converter -option
 		That simple,The program will guide you afterwords
 	OPTIONS:
@@ -26,5 +26,5 @@
 		     file and audio file.
 		-b : To convert your videos or audio from one format to another
 			 say video from mkv to avi,audio from mp3 to mp4
-		--help: used to display this help page</pre>
+		--help: used to display this help page
 
