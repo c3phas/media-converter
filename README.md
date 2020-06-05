@@ -10,8 +10,9 @@ Converter is a unix program that can be used to do various media
 #### Installation
 To install just download the zip file and extract it.
 Copy the converter file to your preffered path such as /bin or /usr/local/bin
-*To check your paths ie location where you can copy this file on the terminal just type*
-```$echo $PATH
+*To check your paths ie location where you can copy this file on the terminal just type.*
+```
+$echo $PATH
 ```
 The path will be sepparated by a colon, you can copy your file to any of this path
 ```
