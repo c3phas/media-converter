@@ -182,6 +182,12 @@ sleep 4
 			ffmpeg -i $video -q:a 1 -q:v 1 -f ogg "$videoName".ogg
 			exit
 			;;
+        m3u8) 
+             echo "m3u8 video format-output inside $vidoeName.output directory"
+             mkdir "$videoName".output
+             ffmpeg -i $video -b:v 1M -g 60 -hls_time 2 -hls_list_size 0 -hls_segment_size 500000 "$videoName.output/$videoName".m3u8
+             exit
+             ;;
 
 		*)
 			echo "check your format/may not be supported"
